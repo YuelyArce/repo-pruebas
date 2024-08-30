@@ -182,8 +182,8 @@ class Vista_lista_apostadores(QWidget):
         """
         Esta función permite volver a la ventana de lista de carreras
         """    
+        self.hide()
         self.interfaz.mostrar_vista_lista_carreras()
-        self.close()
 
     def closeEvent(self, event):
         self.hide()

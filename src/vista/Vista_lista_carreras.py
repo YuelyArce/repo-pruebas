@@ -173,7 +173,8 @@ class Vista_lista_carreras(QWidget):
                 self.tabla_carreras.setVisible(False)
 
         #Elemento para ajustar la forma de la tabla (y evitar que queden muy espaciados)
-        self.distribuidor_tabla_carreras.layout().setRowStretch(numero_fila+2, 1)
+        if len(self.carreras)>0:
+            self.distribuidor_tabla_carreras.layout().setRowStretch(numero_fila+2, 1)
 
     def terminar_carrera(self, id_carrera):
         """
@@ -184,7 +185,6 @@ class Vista_lista_carreras(QWidget):
         dialogo = Dialogo_terminar_carrera(self.interfaz.dar_competidores())
         dialogo.exec_()
         if dialogo.resultado == 1:
-            print(dialogo.combobox_competidores.currentData())
             self.hide()
             self.interfaz.mostrar_reporte_ganancias(dialogo.combobox_competidores.currentData())
 

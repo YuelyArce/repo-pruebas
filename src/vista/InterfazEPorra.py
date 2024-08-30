@@ -42,7 +42,6 @@ class App_EPorra(QApplication):
             self.vista_lista_carreras.mostrar_carreras(self.logica.dar_carreras())
         return validacion
 
-
     def dar_competidor(self, id_competidor):
         """
         Esta función retorna la información de un competidor
@@ -190,13 +189,3 @@ class App_EPorra(QApplication):
         else:
             self.vista_carrera = Vista_carrera(self)
             self.vista_carrera.mostrar_competidores('',[])
-
-    def aniadir_competidor(self, nombre, probabilidad):
-        """
-        Esta función inserta un nuevo competidor en una carrera
-        """
-        
-        self.logica.aniadir_competidor(self.carrera_actual, nombre, probabilidad)
-        nombre_carrera = self.logica.dar_carrera(self.carrera_actual)['Nombre']
-        self.vista_carrera.mostrar_competidores(nombre_carrera, self.logica.dar_competidores_carrera(self.carrera_actual))
- 
