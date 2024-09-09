@@ -7,22 +7,10 @@ class Logica_mock(Fachada_EPorra):
 
     def __init__(self):
         #Este constructor contiene los datos falsos para probar la interfaz
-        self.carreras = [{'Nombre':'Formula 1', 'Competidores':[{'Nombre':'Juan Pablo Montoya', 'Probabilidad':0.15},\
-                                                                 {'Nombre':'Kimi Räikkönen', 'Probabilidad':0.2},\
-                                                                  {'Nombre':'Michael Schumacher', 'Probabilidad':0.65}],\
-                                                    'Abierta':True},
-                          {'Nombre':'Atletismo 100 m planos', 'Competidores':[{'Nombre':'Usain Bolt', 'Probabilidad':0.72},\
-                                                                 {'Nombre':'Lamont Marcell Jacobs', 'Probabilidad':0.13},\
-                                                                  {'Nombre':'Su Bingtian', 'Probabilidad':0.05},\
-                                                                  {'Nombre':'Robson da Silva', 'Probabilidad':0.1}],\
-                                                    'Abierta':True}]      
-        self.apostadores = [{'Nombre':'Pepe Pérez'},{'Nombre':"Ana Andrade"},{'Nombre':"Aymara Castillo"}]
-        self.apuestas = [{'Apostador':'Pepe Pérez', 'Carrera':'Carrera 1', 'Valor':10, 'Competidor':'Juan Pablo Montoya'},\
-                        {'Apostador':'Ana Andrade', 'Carrera':'Carrera 1', 'Valor':25, 'Competidor':'Michael Schumacher'},\
-                        {'Apostador':'Aymara Castillo', 'Carrera':'Carrera 1', 'Valor':14, 'Competidor':'Juan Pablo Montoya'},\
-                        {'Apostador':'Aymara Castillo', 'Carrera':'Carrera 2', 'Valor':45, 'Competidor':'Usain Bolt'}]
-        self.ganancias = [{'Carrera':'Formula 1', 'Ganancias':[('Pepe Pérez',13),('Ana Andrade',0), ('Aymara Castillo',15)], 'Ganancias de la casa': 4},\
-            {'Carrera':'Atletismo 100 m planos', 'Ganancias':[('Pepe Pérez',32),('Ana Andrade',12), ('Aymara Castillo',34)], 'Ganancias de la casa': -10}]
+        self.carreras = []      
+        self.apostadores = []
+        self.apuestas = []
+        self.ganancias = []
 
     def dar_carreras(self):
         return self.carreras.copy()

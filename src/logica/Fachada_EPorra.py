@@ -1,25 +1,22 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.models.models import Carrera, Competidor, session,engine
+
 '''
 Esta clase es tan sólo un mock con datos para probar la interfaz
 '''
 class Fachada_EPorra():
 
     def dar_carreras(self):
-        ''' Retorna la lista de carreras en la aplicación
-        Parámetros:
-            Ninguno
-        Retorna:
-            (list): La lista de objetos con las carreras
-        '''
-        raise NotImplementedError("Método no implementado")
+        return session.query(Carrera).all()
+        
 
     def dar_carrera(self, id_carrera):
-        ''' Retorna una carrera a partir de su identificador
-        Parámetros:
-            id_carrera (int): La posición de la carrera en la lista de carreras
-        Retorna:
-            (dict): La carrera identificada con el id_carrera recibido como parámetro
-        '''
-        raise NotImplementedError("Método no implementado")
+        carrera = session.query(Carrera).filter(Carrera.id == id_carrera).first()
+        if carrera:
+            return carrera
+        else:
+            raise ValueError("Carrera no encontrada")
         
     def crear_carrera(self, nombre):
         ''' Crea una nueva carrera

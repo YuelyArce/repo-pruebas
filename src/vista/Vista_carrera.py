@@ -1,6 +1,10 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.models.models import Carrera, Competidor, session,engine
+
 
 from functools import partial
 from .Vista_crear_competidor import Dialogo_crear_competidor
@@ -199,14 +203,19 @@ class Vista_carrera(QWidget):
 
     
     def aniadir_competidor(self):
-        """
-        Esta función ejecuta el diálogo para crear un competidor
-        """    
+         
         dialogo = Dialogo_crear_competidor()
         dialogo.exec_()
         if dialogo.resultado == 1:
-            self.competidores.append({'Nombre':dialogo.texto_nombre.text(), 'Probabilidad':float(dialogo.texto_probabilidad.text()), 'Estado':'Nueva'})
+            nuevo_competidor = {
+                'Nombre': dialogo.texto_nombre.text(),
+                'Probabilidad': float(dialogo.texto_probabilidad.text()),
+                'Estado': 'Nueva'
+            }
+            self.competidores.append(nuevo_competidor)
             self.mostrar_competidores(self.texto_nombre.text(), self.competidores)
+
+       
     
     def editar_competidor(self, indice_competidor):
         """
@@ -221,32 +230,38 @@ class Vista_carrera(QWidget):
             self.mostrar_competidores(self.texto_nombre.text(), self.competidores)
    
     def guardar_cambios(self):
-        """
-        Esta función guarda los cambios a la carrera (editando o guardando los nuevos competidores)
-        """    
-        competidores = []
+    
+        nombre_carrera = self.texto_nombre.text()
         
-        for i, competidor_en_interfaz in enumerate(self.competidores):
-            if competidor_en_interfaz.get('Estado') == 'Nueva':
-                competidores.append({'Posicion':'Nueva', 'Nombre': competidor_en_interfaz['Nombre'], 'Probabilidad': competidor_en_interfaz['Probabilidad']})
-            else:
-                competidores.append({'Posicion':i, 'Nombre': competidor_en_interfaz['Nombre'], 'Probabilidad': competidor_en_interfaz['Probabilidad']})
         
-        resultado = self.interfaz.guardar_carrera(self.texto_nombre.text(), competidores)
+        carrera_existente = session.query(Carrera).filter_by(nombre=nombre_carrera).first()
         
-        if resultado == "":
-            for i, competidor in enumerate(self.competidores):
-                if competidor.get('Estado') == 'Nueva':
-                    self.interfaz.aniadir_competidor(competidor['Nombre'], competidor['Probabilidad'])
-                else:
-                    self.interfaz.editar_competidor(i, competidor['Nombre'], competidor['Probabilidad'])
-                    
-            self.hide()
-            self.interfaz.mostrar_vista_lista_carreras()
-                
+        if carrera_existente:
+            carrera = carrera_existente
         else:
-            self.error(resultado)
+            carrera = Carrera(nombre=nombre_carrera)
+            session.add(carrera)
+            session.commit()
         
+        
+        for competidor_data in self.competidores:
+            if competidor_data.get('Estado') == 'Nueva':
+                nuevo_competidor = Competidor(
+                    nombre=competidor_data['Nombre'],
+                    probabilidad=competidor_data['Probabilidad'],
+                    carrera=carrera
+                )
+                session.add(nuevo_competidor)
+            else:
+               
+                competidor_existente = session.query(Competidor).filter_by(nombre=competidor_data['Nombre'], carrera=carrera).first()
+                if competidor_existente:
+                    competidor_existente.probabilidad = competidor_data['Probabilidad']
+
+        session.commit()
+        self.hide()
+        self.interfaz.mostrar_vista_lista_carreras()
+
     def closeEvent(self, event):
         self.hide()
         self.interfaz.mostrar_vista_lista_carreras()
@@ -260,3 +275,6 @@ class Vista_carrera(QWidget):
         mensaje_error.setWindowIcon(QIcon("src/recursos/smallLogo.png"))
         mensaje_error.setStandardButtons(QMessageBox.Ok ) 
         respuesta=mensaje_error.exec_()
+
+Session = sessionmaker(bind=engine)
+session = Session()
