@@ -1,10 +1,6 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from src.models.models import Carrera, Competidor, session,engine
-
 
 from functools import partial
 from .Vista_crear_competidor import Dialogo_crear_competidor
@@ -203,19 +199,14 @@ class Vista_carrera(QWidget):
 
     
     def aniadir_competidor(self):
-         
+        """
+        Esta función ejecuta el diálogo para crear un competidor
+        """    
         dialogo = Dialogo_crear_competidor()
         dialogo.exec_()
         if dialogo.resultado == 1:
-            nuevo_competidor = {
-                'Nombre': dialogo.texto_nombre.text(),
-                'Probabilidad': float(dialogo.texto_probabilidad.text()),
-                'Estado': 'Nueva'
-            }
-            self.competidores.append(nuevo_competidor)
+            self.competidores.append({'Nombre':dialogo.texto_nombre.text(), 'Probabilidad':float(dialogo.texto_probabilidad.text()), 'Estado':'Nueva'})
             self.mostrar_competidores(self.texto_nombre.text(), self.competidores)
-
-       
     
     def editar_competidor(self, indice_competidor):
         """
@@ -230,38 +221,22 @@ class Vista_carrera(QWidget):
             self.mostrar_competidores(self.texto_nombre.text(), self.competidores)
    
     def guardar_cambios(self):
-    
         nombre_carrera = self.texto_nombre.text()
+        competidores = self.competidores  # Asegúrate de que esta lista esté correctamente obtenida
         
+        resultado, mensaje_error = self.interfaz.guardar_carrera(nombre_carrera, competidores)
         
-        carrera_existente = session.query(Carrera).filter_by(nombre=nombre_carrera).first()
-        
-        if carrera_existente:
-            carrera = carrera_existente
+        if resultado:
+            self.hide()
+            self.interfaz.mostrar_vista_lista_carreras()
         else:
-            carrera = Carrera(nombre=nombre_carrera)
-            session.add(carrera)
-            session.commit()
+            self.error(mensaje_error)
+
+    def error(self, mensaje_error):
+        # Ajustar para manejar el mensaje de error
+        self.mensaje_error.setText(mensaje_error)
         
         
-        for competidor_data in self.competidores:
-            if competidor_data.get('Estado') == 'Nueva':
-                nuevo_competidor = Competidor(
-                    nombre=competidor_data['Nombre'],
-                    probabilidad=competidor_data['Probabilidad'],
-                    carrera=carrera
-                )
-                session.add(nuevo_competidor)
-            else:
-               
-                competidor_existente = session.query(Competidor).filter_by(nombre=competidor_data['Nombre'], carrera=carrera).first()
-                if competidor_existente:
-                    competidor_existente.probabilidad = competidor_data['Probabilidad']
-
-        session.commit()
-        self.hide()
-        self.interfaz.mostrar_vista_lista_carreras()
-
     def closeEvent(self, event):
         self.hide()
         self.interfaz.mostrar_vista_lista_carreras()
@@ -275,6 +250,3 @@ class Vista_carrera(QWidget):
         mensaje_error.setWindowIcon(QIcon("src/recursos/smallLogo.png"))
         mensaje_error.setStandardButtons(QMessageBox.Ok ) 
         respuesta=mensaje_error.exec_()
-
-Session = sessionmaker(bind=engine)
-session = Session()

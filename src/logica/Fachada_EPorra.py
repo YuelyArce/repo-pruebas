@@ -1,51 +1,90 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.models.models import Carrera, Competidor, session,engine
+from src.models.models import Carrera, session,Competidor,Session
 
-'''
-Esta clase es tan sólo un mock con datos para probar la interfaz
-'''
+
+
 class Fachada_EPorra():
+    def __init__(self):
+        #Este constructor contiene los datos falsos para probar la interfaz
+        
+        self.carreras = self.obtener_carreras()
+        self.actual=0
+        
+        
+
+    
+
+    def obtener_carreras(self):
+        carreras = session.query(Carrera).all()
+        
+        return carreras
 
     def dar_carreras(self):
-        return session.query(Carrera).all()
+    
+        if not self.carreras:
+         return []  # Retorna una lista vacía si no hay carreras
+        return self.carreras  # Retorna todas las carreras almacenadas
+        
         
 
     def dar_carrera(self, id_carrera):
-        carrera = session.query(Carrera).filter(Carrera.id == id_carrera).first()
-        if carrera:
-            return carrera
-        else:
-            raise ValueError("Carrera no encontrada")
-        
-    def crear_carrera(self, nombre):
-        ''' Crea una nueva carrera
+        ''' Retorna una carrera a partir de su identificador
         Parámetros:
-            nombre (string): el nombre de la carrera a crear
-        '''
-        raise NotImplementedError("Método no implementado")
-
-    def editar_carrera(self, id, nombre):
-        ''' Edita una carrera a partir de su identificador
-        Parámetros:
-            id (int): La posición de la carrera en la lista de carreras
-            nombre (string): El nombre de la carrera a actualizar
-        '''
-        raise NotImplementedError("Método no implementado")
-
-    def validar_crear_editar_carrera(self, nombre, competidores):
-        ''' Valida la información de una carrera a partir de su nombre y los competidores
-        Parámetros:
-            nombre (string): El nombre de la carrera
-            competidores (list): Una lista de competidores con un hashmap que contiene
-                - el id de posición del competidor o la palabra Nuevo si es un competidor nuevo y no tiene id
-                - el nombre del competidor
-                - la probabilidad del competidor
+            id_carrera (int): La posición de la carrera en la lista de carreras
         Retorna:
-            (string): Una cadena con los mensajes de error en la validación o vacío si no hay errores
+            (dict): La carrera identificada con el id_carrera recibido como parámetro
         '''
         raise NotImplementedError("Método no implementado")
+        
+    def actualizar_lista_carreras(self):
+        """ Actualiza la lista de carreras """
+        self.carreras = self.obtener_carreras()
 
+    def crear_carrera(self, nombre_carrera, competidores):
+        with Session() as session:
+            # Validar el nombre de la carrera
+            if not nombre_carrera or nombre_carrera.strip() == "":
+                return False, "El nombre de la carrera no puede estar vacío."
+
+            # Verificar si la carrera ya existe
+            carrera_existente = session.query(Carrera).filter_by(nombre=nombre_carrera).first()
+            
+            if carrera_existente:
+                carrera = carrera_existente
+            else:
+                carrera = Carrera(nombre=nombre_carrera)
+                session.add(carrera)
+                session.commit()
+            
+            # Procesar competidores
+            for competidor_data in competidores:
+                if 'Nombre' not in competidor_data or 'Probabilidad' not in competidor_data:
+                    return False, "Cada competidor debe tener un nombre y una probabilidad."
+
+                if competidor_data['Nombre'].strip() == "":
+                    return False, "Cada competidor debe tener un nombre."
+
+                if competidor_data['Probabilidad'] <= 0:
+                    return False, "La probabilidad debe ser mayor que 0."
+
+                if competidor_data.get('Estado') == 'Nueva':
+                    nuevo_competidor = Competidor(
+                        nombre=competidor_data['Nombre'],
+                        probabilidad=competidor_data['Probabilidad'],
+                        carrera=carrera
+                    )
+                    session.add(nuevo_competidor)
+                else:
+                    competidor_existente = session.query(Competidor).filter_by(nombre=competidor_data['Nombre'], carrera=carrera).first()
+                    if competidor_existente:
+                        competidor_existente.probabilidad = competidor_data['Probabilidad']
+            
+            session.commit()
+            self.actualizar_lista_carreras()
+        return True, "Carrera y competidores guardados con éxito."
+        
+        
     def terminar_carrera(self, id, ganador):
         ''' Termina una carrera asignando un ganador y dejando su variable de terminada en verdadero
         Parámetros:

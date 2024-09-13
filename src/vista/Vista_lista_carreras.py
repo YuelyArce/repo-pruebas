@@ -88,93 +88,94 @@ class Vista_lista_carreras(QWidget):
 
 
     def mostrar_carreras(self, lista_carreras):
+        
         """
         Esta función puebla la tabla con las carreras
         """
         self.carreras = lista_carreras
 
-        #Este pedazo de código borra todo lo que no sean encabezados.
-        while self.distribuidor_tabla_carreras.count()>2:
+        # Este pedazo de código borra todo lo que no sean encabezados.
+        while self.distribuidor_tabla_carreras.count() > 2:
             child = self.distribuidor_tabla_carreras.takeAt(2)
             if child.widget():
                 child.widget().deleteLater()
 
-        self.distribuidor_tabla_carreras.setColumnStretch(0,1)
-        self.distribuidor_tabla_carreras.setColumnStretch(1,0)
-        self.distribuidor_tabla_carreras.setColumnStretch(2,0)
-        self.distribuidor_tabla_carreras.setColumnStretch(3,0)
-        self.distribuidor_tabla_carreras.setColumnStretch(4,0)
-        self.distribuidor_tabla_carreras.setColumnStretch(4,0)
+        self.distribuidor_tabla_carreras.setColumnStretch(0, 1)
+        self.distribuidor_tabla_carreras.setColumnStretch(1, 0)
+        self.distribuidor_tabla_carreras.setColumnStretch(2, 0)
+        self.distribuidor_tabla_carreras.setColumnStretch(3, 0)
+        self.distribuidor_tabla_carreras.setColumnStretch(4, 0)
 
-        #Ciclo para llenar la tabla
-        if (self.carreras!= None and len(self.carreras)>0) :
+        # Ciclo para llenar la tabla
+        if self.carreras and len(self.carreras) > 0:
             self.tabla_carreras.setVisible(True)
 
-            #Creación de las etiquetas
-
-            etiqueta_nombre=QLabel("Nombre")                      
-            etiqueta_nombre.setMinimumSize(QSize(0,0))
-            etiqueta_nombre.setMaximumSize(QSize(65525,65525))
+            # Creación de las etiquetas
+            etiqueta_nombre = QLabel("Nombre")
+            etiqueta_nombre.setMinimumSize(QSize(0, 0))
+            etiqueta_nombre.setMaximumSize(QSize(65525, 65525))
             etiqueta_nombre.setAlignment(Qt.AlignCenter)
-            etiqueta_nombre.setFont(QFont("Times",weight=QFont.Bold)) 
-            self.distribuidor_tabla_carreras.addWidget(etiqueta_nombre, 0,0, Qt.AlignCenter)
+            etiqueta_nombre.setFont(QFont("Times", weight=QFont.Bold))
+            self.distribuidor_tabla_carreras.addWidget(etiqueta_nombre, 0, 0, Qt.AlignCenter)
 
-            etiqueta_acciones=QLabel("Acciones")                      
-            etiqueta_acciones.setMinimumSize(QSize(0,0))
-            etiqueta_acciones.setMaximumSize(QSize(65525,65525))
+            etiqueta_acciones = QLabel("Acciones")
+            etiqueta_acciones.setMinimumSize(QSize(0, 0))
+            etiqueta_acciones.setMaximumSize(QSize(65525, 65525))
             etiqueta_acciones.setAlignment(Qt.AlignCenter)
-            etiqueta_acciones.setFont(QFont("Times",weight=QFont.Bold))               
-            self.distribuidor_tabla_carreras.addWidget(etiqueta_acciones, 0,1,1,5, Qt.AlignCenter)
-       
-            numero_fila=0
-            for dic_carrera in self.carreras:
-                numero_fila=numero_fila+1
+            etiqueta_acciones.setFont(QFont("Times", weight=QFont.Bold))
+            self.distribuidor_tabla_carreras.addWidget(etiqueta_acciones, 0, 1, 1, 5, Qt.AlignCenter)
 
-                etiqueta_nombre=QLabel(dic_carrera['Nombre'])          
+            numero_fila = 0
+            for carrera in self.carreras:
+                numero_fila += 1
+
+                nombre_carrera = getattr(carrera, 'nombre', 'Sin nombre')  # Usar 'nombre' si 'get_nombre' no está disponible
+                etiqueta_nombre = QLabel(nombre_carrera)
                 etiqueta_nombre.setWordWrap(True)
-                self.distribuidor_tabla_carreras.addWidget(etiqueta_nombre,numero_fila,0)
+                self.distribuidor_tabla_carreras.addWidget(etiqueta_nombre, numero_fila, 0)
 
-                #Creación de los botones asociados a cada acción
-                btn_ver_actividad=QPushButton("",self)
+                # Creación de los botones asociados a cada acción
+                btn_ver_actividad = QPushButton("", self)
                 btn_ver_actividad.setToolTip("Editar carrera")
-                btn_ver_actividad.setFixedSize(40,40)
+                btn_ver_actividad.setFixedSize(40, 40)
                 btn_ver_actividad.setIcon(QIcon("src/recursos/004-edit-button.png"))
-                btn_ver_actividad.clicked.connect(partial(self.mostrar_carrera,numero_fila-1) )
-                self.distribuidor_tabla_carreras.addWidget(btn_ver_actividad,numero_fila,1,Qt.AlignCenter)
+                btn_ver_actividad.clicked.connect(partial(self.mostrar_carrera, numero_fila - 1))
+                self.distribuidor_tabla_carreras.addWidget(btn_ver_actividad, numero_fila, 1, Qt.AlignCenter)
 
-                btn_editar=QPushButton("",self)
+                btn_editar = QPushButton("", self)
                 btn_editar.setToolTip("Añadir apuestas")
-                btn_editar.setFixedSize(40,40)
+                btn_editar.setFixedSize(40, 40)
                 btn_editar.setIcon(QIcon("src/recursos/009-money.png"))
-                btn_editar.clicked.connect(partial(self.mostrar_apuestas,numero_fila -1 ) )
-                self.distribuidor_tabla_carreras.addWidget(btn_editar,numero_fila,2,Qt.AlignCenter)
+                btn_editar.clicked.connect(partial(self.mostrar_apuestas, numero_fila - 1))
+                self.distribuidor_tabla_carreras.addWidget(btn_editar, numero_fila, 2, Qt.AlignCenter)
 
-                btn_terminar=QPushButton("",self)
+                btn_terminar = QPushButton("", self)
                 btn_terminar.setToolTip("Terminar")
-                btn_terminar.setFixedSize(40,40)
+                btn_terminar.setFixedSize(40, 40)
                 btn_terminar.setIcon(QIcon("src/recursos/reward.png"))
-                btn_terminar.clicked.connect(partial(self.terminar_carrera,numero_fila-1) )
-                self.distribuidor_tabla_carreras.addWidget(btn_terminar,numero_fila,3,Qt.AlignCenter)
+                btn_terminar.clicked.connect(partial(self.terminar_carrera, numero_fila - 1))
+                self.distribuidor_tabla_carreras.addWidget(btn_terminar, numero_fila, 3, Qt.AlignCenter)
 
-                btn_eliminar=QPushButton("",self)
+                btn_eliminar = QPushButton("", self)
                 btn_eliminar.setToolTip("Eliminar")
-                btn_eliminar.setFixedSize(40,40)
+                btn_eliminar.setFixedSize(40, 40)
                 btn_eliminar.setIcon(QIcon("src/recursos/005-delete.png"))
-                btn_eliminar.clicked.connect(partial(self.eliminar_carrera,numero_fila -1) )
-                self.distribuidor_tabla_carreras.addWidget(btn_eliminar,numero_fila,4,Qt.AlignCenter)
+                btn_eliminar.clicked.connect(partial(self.eliminar_carrera, numero_fila - 1))
+                self.distribuidor_tabla_carreras.addWidget(btn_eliminar, numero_fila, 4, Qt.AlignCenter)
 
-                if not dic_carrera['Abierta']:
+                if not carrera.abierta:
                     btn_ver_actividad.setDisabled(True)
                     btn_editar.setDisabled(True)
                     btn_terminar.setDisabled(True)
                     btn_eliminar.setDisabled(True)
 
         else:
-                self.tabla_carreras.setVisible(False)
+            self.tabla_carreras.setVisible(False)
 
-        #Elemento para ajustar la forma de la tabla (y evitar que queden muy espaciados)
-        if len(self.carreras)>0:
-            self.distribuidor_tabla_carreras.layout().setRowStretch(numero_fila+2, 1)
+        # Elemento para ajustar la forma de la tabla (y evitar que queden muy espaciados)
+        if len(self.carreras) > 0:
+            self.distribuidor_tabla_carreras.layout().setRowStretch(numero_fila + 2, 1)
+
 
     def terminar_carrera(self, id_carrera):
         """

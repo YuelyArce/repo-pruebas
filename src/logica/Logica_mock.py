@@ -7,11 +7,9 @@ class Logica_mock(Fachada_EPorra):
 
     def __init__(self):
         #Este constructor contiene los datos falsos para probar la interfaz
-        self.carreras = []      
-        self.apostadores = []
-        self.apuestas = []
-        self.ganancias = []
+        self.carreras = []
 
+        
     def dar_carreras(self):
         return self.carreras.copy()
 

@@ -28,19 +28,13 @@ class App_EPorra(QApplication):
         self.vista_lista_carreras = Vista_lista_carreras(self) 
         self.vista_lista_carreras.mostrar_carreras(self.logica.dar_carreras())
 
-    def guardar_carrera(self, nombre, competidores):
-        """
-        Esta función guarda una nueva carrera o los cambios sobre una existente
-        """
+    def guardar_carrera(self, nombre_carrera, competidores):
+        resultado, mensaje = self.logica.crear_carrera(nombre_carrera, competidores)
         
-        validacion = self.logica.validar_crear_editar_carrera(nombre, competidores)
-        if validacion == "":
-            if self.carrera_actual == -1:
-                self.logica.crear_carrera(nombre)
-            else:
-                self.logica.editar_carrera(self.carrera_actual, nombre)
-            self.vista_lista_carreras.mostrar_carreras(self.logica.dar_carreras())
-        return validacion
+        if not resultado:
+            return False, mensaje  # Error message
+        else:
+            return True, mensaje  # Success message
 
     def dar_competidor(self, id_competidor):
         """
