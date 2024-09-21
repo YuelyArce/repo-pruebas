@@ -144,11 +144,12 @@ class Vista_lista_apostadores(QWidget):
         """
         Esta función ejecuta el diálogo para editar un apostador
         """    
-        dialogo=Dialogo_crear_apostador(self.apostadores[id_apostador])        
+        dialogo=Dialogo_crear_apostador(self.apostadores[id_apostador])
         dialogo.exec_()
         if dialogo.resultado==1:            
-            resultado = self.interfaz.editar_apostador(id_apostador, dialogo.texto_nombre.text())
-            if resultado != "":
+            resultado = self.interfaz.editar_apostador(self.apostadores[id_apostador].id, dialogo.texto_nombre.text())
+            self.mostrar_apostadores(self.interfaz.dar_apostadores())
+            if resultado == "":
                 self.error(resultado)
 
     def eliminar_apostador(self, indice_apostador):
@@ -163,7 +164,8 @@ class Vista_lista_apostadores(QWidget):
         mensaje_confirmacion.setStandardButtons(QMessageBox.Yes | QMessageBox.No ) 
         respuesta=mensaje_confirmacion.exec_()
         if respuesta == QMessageBox.Yes:
-            self.interfaz.eliminar_apostador(indice_apostador)          
+            self.interfaz.eliminar_apostador(self.apostadores[indice_apostador].id)
+            self.mostrar_apostadores(self.interfaz.dar_apostadores())      
 
 
     def mostrar_dialogo_aniadir_apostador(self):
@@ -174,6 +176,7 @@ class Vista_lista_apostadores(QWidget):
         dialogo.exec_()
         if dialogo.resultado==1:            
             resultado = self.interfaz.aniadir_apostador(dialogo.texto_nombre.text())
+            self.mostrar_apostadores(self.interfaz.dar_apostadores())
             if resultado != "":
                 self.error(resultado)
 

@@ -8,7 +8,7 @@ class Logica_mock(Fachada_EPorra):
     def __init__(self):
         #Este constructor contiene los datos falsos para probar la interfaz
         self.carreras = []
-
+        
         
     def dar_carreras(self):
         return self.carreras.copy()
@@ -41,7 +41,8 @@ class Logica_mock(Fachada_EPorra):
         self.apostadores[id]['Nombre'] = nombre
     
     def validar_crear_editar_apostador(self, nombre):
-        return ""
+        self.dar_apostadores["nombre"] = nombre 
+        return self.nombre
     
     def eliminar_apostador(self, id):
         del self.apostadores[id]

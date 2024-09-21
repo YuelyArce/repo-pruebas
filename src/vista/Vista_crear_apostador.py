@@ -62,7 +62,7 @@ class Dialogo_crear_apostador(QDialog):
         #Si el diálogo se va a usar para editar, se pone la información correspondiente en los campos de texto
 
         if (apostador!=None):
-            self.texto_nombre.setText(apostador["Nombre"])
+            self.texto_nombre.setText(apostador.nombre)
 
 
     def guardar(self):

@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from src.models.models import Carrera, session,Competidor,Session, Apostador
+from sqlalchemy.exc import SQLAlchemyError
 
 
 
@@ -32,7 +33,7 @@ class Fachada_EPorra():
         Parámetros:
             id_carrera (int): La posición de la carrera en la lista de carreras
         Retorna:
-            (dict): La carrera identificada con el id_carrera recibido como parámetro
+            (dict): La carrera identifcon el id_carrera recibido como parámetro
         '''
         raise NotImplementedError("Método no implementado")
         
@@ -132,14 +133,14 @@ class Fachada_EPorra():
     Retorna:
         (list): La lista de apostadores en EPorra
     '''
-        with Session() as session:
-        # Consulta a la base de datos para obtener todos los apostadores
-            apostadores = session.query(Apostador).all()
         
-        # Devuelve la lista de apostadores
+        try:
+            apostadores  = session.query(Apostador).all()
+            print(apostadores)
             return apostadores
-        
-        raise NotImplementedError("Método no implementado")
+        except Exception as e:
+            print("eror", e)
+            return []
 
     def aniadir_apostador(self, nombre):
         ''' Adiciona un apostador
@@ -168,6 +169,16 @@ class Fachada_EPorra():
             id (int): La posición del apostador en la lista de apostadores
             nombre (string): El nombre del apostador a actualizar
         '''
+        print(id, nombre)
+        apostador = session.query(Apostador).filter_by(id=id).first()
+        apostador.nombre = nombre
+        try:
+            session.commit()
+        except SQLAlchemyError as e:
+            session.rollback()
+            return f"Errot : {e}"
+        return "Usuarios Editado"
+
         raise NotImplementedError("Método no implementado")
     
     def validar_crear_editar_apostador(self, nombre):
@@ -177,6 +188,32 @@ class Fachada_EPorra():
         Retorna:
             (string): Una cadena con los mensajes de error en la validación o vacío si no hay errores
         '''
+        if not nombre or nombre.strip() == "":
+            return "El nombre del apostador no puede estar vacío"
+        if len(nombre) < 3:
+            return "El nombre debe tener mas de 3 caracteres"
+        
+        if len(nombre) > 50:
+            return "El nombre no puede tener mas de 50 caracteres"
+        
+        try:
+            apostador_existente = session.query(Apostador).filter_by(nombre=nombre).first()
+            if apostador_existente:
+                return f"El Apostador con el nombre '{nombre}' ya existe"
+        except SQLAlchemyError as e:
+            return f"Error al verificar si el apostador ya existe: {e}"
+        
+        nuevo_apostador = Apostador(nombre=nombre)
+        session.add(nuevo_apostador)
+
+        try:
+            session.commit()
+        except SQLAlchemyError as e:
+            session.rollback()
+            return f"Error al guardar el apostador: {e}"
+        
+        return f"Apostador '{nombre} fue creado con exito"
+
         raise NotImplementedError("Método no implementado")
     
     def eliminar_apostador(self, id):
@@ -184,6 +221,20 @@ class Fachada_EPorra():
         Parámetros:
             id (int): La posición del apostador en la lista de apostadores
         '''
+
+        apostador = session.query(Apostador).filter_by(id=id).first()
+
+        if not apostador:
+            return "No se puede eliminar"
+        
+        try:
+            session.delete(apostador)
+            session.commit()
+        except SQLAlchemyError as e:
+            session.rollback()
+            return f"Error al guardar el apostador: {e}"
+        
+        return f"Apostador '{apostador.nombre} fue creado con exito"
         raise NotImplementedError("Método no implementado")
 
     def dar_competidores_carrera(self, id):

@@ -80,10 +80,12 @@ class App_EPorra(QApplication):
         """
         Esta función edita la información de un apostador
         """
+        print(id, nombre)
         validacion = self.logica.validar_crear_editar_apostador(nombre)
-        if validacion == "":
+        if validacion != "":
             self.logica.editar_apostador(id, nombre)
             self.vista_lista_apostadores.mostrar_apostadores(self.logica.dar_apostadores())
+
         return nombre
 
     def mostrar_apostadores(self):
