@@ -114,7 +114,7 @@ class Vista_lista_apostadores(QWidget):
         numero_fila = 0
         for apostador in self.apostadores:
 
-            etiqueta_nombre=QLabel(apostador["Nombre"])          
+            etiqueta_nombre=QLabel(apostador.nombre)          
             etiqueta_nombre.setWordWrap(True)
             etiqueta_nombre.setFixedSize(90,40)
             self.distribuidor_tabla_apostadores.addWidget(etiqueta_nombre, numero_fila+1,0, Qt.AlignTop)

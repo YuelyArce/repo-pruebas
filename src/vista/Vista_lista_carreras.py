@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 from functools import partial
 
 
+
 from .Vista_terminar_carrera import Dialogo_terminar_carrera
 
 
@@ -153,14 +154,15 @@ class Vista_lista_carreras(QWidget):
                 btn_terminar.setToolTip("Terminar")
                 btn_terminar.setFixedSize(40, 40)
                 btn_terminar.setIcon(QIcon("src/recursos/reward.png"))
-                btn_terminar.clicked.connect(partial(self.terminar_carrera, numero_fila - 1))
+                btn_terminar.clicked.connect(partial(self.terminar_carrera, numero_fila -1))
+                ##btn_terminar.clicked.connect(partial(self.terminar_carrera, numero_fila -1))
                 self.distribuidor_tabla_carreras.addWidget(btn_terminar, numero_fila, 3, Qt.AlignCenter)
 
                 btn_eliminar = QPushButton("", self)
                 btn_eliminar.setToolTip("Eliminar")
                 btn_eliminar.setFixedSize(40, 40)
                 btn_eliminar.setIcon(QIcon("src/recursos/005-delete.png"))
-                btn_eliminar.clicked.connect(partial(self.eliminar_carrera, numero_fila - 1))
+                btn_eliminar.clicked.connect(partial(self.eliminar_carrera, getattr(carrera, 'id')))
                 self.distribuidor_tabla_carreras.addWidget(btn_eliminar, numero_fila, 4, Qt.AlignCenter)
 
                 if not carrera.abierta:
@@ -182,12 +184,25 @@ class Vista_lista_carreras(QWidget):
         Esta función informa a la interfaz para terminar una carrera
         """
         
-        self.interfaz.carrera_actual = id_carrera
-        dialogo = Dialogo_terminar_carrera(self.interfaz.dar_competidores())
-        dialogo.exec_()
-        if dialogo.resultado == 1:
-            self.hide()
-            self.interfaz.mostrar_reporte_ganancias(dialogo.combobox_competidores.currentData())
+        mensaje_confirmacion=QMessageBox()
+        mensaje_confirmacion.setIcon(QMessageBox.Question)
+        mensaje_confirmacion.setText("¿Esta seguro de que desea terminar esta carrera?\nRecuerde que esta acción es irreversible")        
+        mensaje_confirmacion.setWindowTitle("¿Desea Terminar esta carrera?")
+        mensaje_confirmacion.setWindowIcon(QIcon("src/recursos/smallLogo.png"))
+        mensaje_confirmacion.setStandardButtons(QMessageBox.Yes | QMessageBox.No ) 
+        respuesta=mensaje_confirmacion.exec_()
+        if respuesta == QMessageBox.Yes:
+            id_ganador, ok = QInputDialog.getText(self, "Confirmación de ID", 
+                "Ingrese el ID del ganador para confirmar:", 
+                text="")
+            self.interfaz.terminar_carrera(id_carrera, id_ganador)
+            self.close()
+            self.__init__(self.interfaz)
+           
+            #self.mostrar_carreras(self.interfaz.get_carreras())
+
+       
+        ##self.interfaz.mostrar_reporte_ganancias(dialogo.combobox_competidores.currentData())
 
     def mostrar_carrera(self,id_carrera): 
         """

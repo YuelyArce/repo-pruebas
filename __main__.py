@@ -10,3 +10,5 @@ if __name__ == '__main__':
 
     app = App_EPorra(sys.argv, logica)
     sys.exit(app.exec_())
+
+    

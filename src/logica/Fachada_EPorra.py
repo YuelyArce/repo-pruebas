@@ -1,6 +1,7 @@
+from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.models.models import Carrera, session,Competidor,Session
+from src.models.models import Carrera, session,Competidor,Session, Apostador
 
 
 
@@ -10,10 +11,8 @@ class Fachada_EPorra():
         
         self.carreras = self.obtener_carreras()
         self.actual=0
-        
-        
-
-    
+              
+  
 
     def obtener_carreras(self):
         carreras = session.query(Carrera).all()
@@ -91,22 +90,55 @@ class Fachada_EPorra():
             id (int): La posición de la carrera en la lista de carreras
             ganador (int): El ganador de la carrera
         '''
-        raise NotImplementedError("Método no implementado")
+        print("id",id, "-", ganador)
+        with Session() as session:
+            print("id",id, "-", ganador)
+            index = int(id)+1
+            Carrera_db = session.query(Carrera).filter_by(id=index).first()
+            Carrera_db.abierta = False
+            Carrera_db.ganador = int(ganador)
+            session.commit()
+        self.actualizar_lista_carreras()
+        #return "ok"
+        #raise NotImplementedError("-----Metodo no implementado")
 
     def eliminar_carrera(self, id):
         ''' Elimina una carrera
         Parámetros:
             id (int): La posición de la carrera en la lista de carreras
         '''
+        with Session() as session:
+        # Buscar la carrera por su ID
+            carrera = session.query(Carrera).filter_by(id=id).first()
+
+            if not carrera:
+                return False, "Carrera no encontrada."
+
+            # Eliminar la carrera y todos sus competidores asociados
+            session.delete(carrera)
+            session.commit()
+        
+        # Actualizar la lista de carreras en la fachada
+        self.actualizar_lista_carreras()
+
+        return True, "Carrera eliminada con éxito."
+        
         raise NotImplementedError("Método no implementado")
 
     def dar_apostadores(self):
         ''' Retorna una lista de apostadores
-        Parámetros:
-            Ninguno
-        Retorna:
-            (list): La lista de apostadores en EPorra
-        '''
+    Parámetros:
+        Ninguno
+    Retorna:
+        (list): La lista de apostadores en EPorra
+    '''
+        with Session() as session:
+        # Consulta a la base de datos para obtener todos los apostadores
+            apostadores = session.query(Apostador).all()
+        
+        # Devuelve la lista de apostadores
+            return apostadores
+        
         raise NotImplementedError("Método no implementado")
 
     def aniadir_apostador(self, nombre):
@@ -114,6 +146,20 @@ class Fachada_EPorra():
         Parámetros:
             nombre (string): El nombre del apostador a adicionar
         '''
+        with Session() as session:
+        # Verificar si el nombre del apostador ya existe
+            if session.query(Apostador).filter_by(nombre=nombre).first():
+                raise ValueError(f"El apostador con el nombre '{nombre}' ya existe.")
+        
+        # Crear un nuevo objeto de tipo Apostador
+            nuevo_apostador = Apostador(nombre=nombre)
+            
+            # Agregar el nuevo apostador a la sesión
+            session.add(nuevo_apostador)
+            
+            # Confirmar los cambios en la base de datos
+            session.commit()
+        return True
         raise NotImplementedError("Método no implementado")
     
     def editar_apostador(self, id, nombre):
@@ -246,12 +292,30 @@ class Fachada_EPorra():
         '''
         raise NotImplementedError("Método no implementado")
 
-    def dar_reporte_ganancias(self, id_carrera, id_competidor):
-        ''' Genera la información para el reporte de ganancias
-        Parámetros:
-            id_carrera (int): La posición de la carrera en la lista de carreras
-            id_competidor (int): La posición del competidor en la lista de competidores de la carrera
-        Retorna:
-            (list, float): Una lista con los valores que ganan los apostadores y el valor de las ganancias de la casa
-        '''
-        raise NotImplementedError("Método no implementado")
+def dar_reporte_ganancias(self, id_carrera, id_competidor):
+    ''' Genera la información para el reporte de ganancias
+    Parámetros:
+        id_carrera (int): La posición de la carrera en la lista de carreras
+        id_competidor (int): La posición del competidor en la lista de competidores de la carrera
+    Retorna:
+        (list, float): Una lista con los valores que ganan los apostadores y el valor de las ganancias de la casa
+    '''
+    self.terminar_carrera(id_carrera + 1, id_competidor + 1)    
+    ganancia_apostadores = []
+    apuestas = self.dar_apuestas_carrera(id_carrera)
+    competidor_ganador = self.session.query(Competidor).filter_by(id=id_competidor + 1).first()
+    
+    if competidor_ganador is None:
+        raise ValueError("Competidor no encontrado")
+
+    for apuesta in apuestas:
+        if apuesta['Competidor'] == competidor_ganador.nombre:
+            ganancia = apuesta['valor'] + (apuesta['valor'] * competidor_ganador.probabilidad)
+            ganancia_apostadores.append([apuesta['Apostador'], ganancia])
+
+    total_apuestas = sum(apuesta['valor'] for apuesta in apuestas)
+    total_ganancias_apostadores = sum(valor[1] for valor in ganancia_apostadores)
+    total_casa = total_apuestas - total_ganancias_apostadores
+
+    return ganancia_apostadores, total_casa
+

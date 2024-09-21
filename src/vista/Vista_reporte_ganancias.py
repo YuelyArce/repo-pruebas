@@ -1,12 +1,9 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QWidget
-
-from functools import partial
 
 class Vista_reporte_ganancias(QWidget):
-    #Ventana que muestra el reporte de ganancias para una carrera
+    # Ventana que muestra el reporte de ganancias para una carrera
 
     def __init__(self, interfaz):
         """
@@ -29,8 +26,7 @@ class Vista_reporte_ganancias(QWidget):
         self.show()
 
     def inicializar_GUI(self):
-
-        # inicializamos la ventana
+        # Inicializamos la ventana
         self.setWindowTitle(self.titulo)
         self.setFixedSize(self.width, self.height)
         self.setWindowIcon(QIcon("src/recursos/smallLogo.png"))
@@ -47,29 +43,28 @@ class Vista_reporte_ganancias(QWidget):
         self.distribuidor_tabla_reporte.setColumnStretch(0, 1)
         self.distribuidor_tabla_reporte.setColumnStretch(1, 1)
 
-
         self.contenedor_tabla = QGroupBox(self)
         self.contenedor_tabla.setLayout(QHBoxLayout())
         self.contenedor_tabla.setTitle('Ganancias')
         self.distribuidor_base.addWidget(self.contenedor_tabla)
 
-
         self.contenedor_tabla.layout().addWidget(self.tabla_reporte)
         self.tabla_reporte.setStyleSheet('QScrollArea{border:none}')
+
         # Creación de las etiquetas con los encabezados
         etiqueta_viajero = QLabel("Apostador")
-        etiqueta_viajero.setFont(QFont("Times",weight=QFont.Bold)) 
-        self.distribuidor_tabla_reporte.addWidget(etiqueta_viajero, 0, 0, Qt.AlignCenter|Qt.AlignTop)
+        etiqueta_viajero.setFont(QFont("Times", weight=QFont.Bold))
+        self.distribuidor_tabla_reporte.addWidget(etiqueta_viajero, 0, 0, Qt.AlignCenter | Qt.AlignTop)
 
         etiqueta_ganancia = QLabel("Ganancia")
-        etiqueta_ganancia.setFont(QFont("Times",weight=QFont.Bold)) 
-        self.distribuidor_tabla_reporte.addWidget(etiqueta_ganancia, 0, 1, Qt.AlignCenter|Qt.AlignTop)
+        etiqueta_ganancia.setFont(QFont("Times", weight=QFont.Bold))
+        self.distribuidor_tabla_reporte.addWidget(etiqueta_ganancia, 0, 1, Qt.AlignCenter | Qt.AlignTop)
 
         grupo_casa = QGroupBox()
         grupo_casa.setLayout(QHBoxLayout())
 
         etiqueta_casa = QLabel("Ganancias de la casa:")
-        etiqueta_casa.setFont(QFont("Times",weight=QFont.Bold)) 
+        etiqueta_casa.setFont(QFont("Times", weight=QFont.Bold))
         grupo_casa.layout().addWidget(etiqueta_casa)
 
         self.etiqueta_valor_casa = QLabel("$\t")
@@ -80,7 +75,7 @@ class Vista_reporte_ganancias(QWidget):
         self.distribuidor_base.addWidget(grupo_casa)
         self.distribuidor_base.setAlignment(grupo_casa, Qt.AlignCenter)
 
-        #Creación de los botones de funciones de la ventana
+        # Creación de los botones de funciones de la ventana
         self.btn_volver = QPushButton("Volver", self)
         self.btn_volver.setFixedSize(200, 40)
         self.btn_volver.setToolTip("Añadir Actividad")
@@ -90,17 +85,14 @@ class Vista_reporte_ganancias(QWidget):
         self.distribuidor_base.addWidget(self.btn_volver)
         self.distribuidor_base.setAlignment(self.btn_volver, Qt.AlignCenter)
 
-
     def mostrar_ganancias(self, lista_ganancias, ganancias_casa):
         """
         Esta función puebla el reporte de ganancias con la información en la lista
         """
 
-        #Por cada iteración, llenamos con el nombre del apostador y sus ganancias
-        
+        # Por cada iteración, llenamos con el nombre del apostador y sus ganancias
         numero_fila = 1
         for apostador, valor in lista_ganancias:
-
             etiqueta_viajero = QLabel("\t{}".format(apostador))
             etiqueta_viajero.setWordWrap(True)
             self.distribuidor_tabla_reporte.addWidget(etiqueta_viajero, numero_fila, 0, Qt.AlignLeft)
@@ -109,17 +101,17 @@ class Vista_reporte_ganancias(QWidget):
             etiqueta_total.setWordWrap(True)
             self.distribuidor_tabla_reporte.addWidget(etiqueta_total, numero_fila, 1, Qt.AlignCenter)
 
-            numero_fila = numero_fila+1
+            numero_fila += 1
 
-        #Añadimos las ganancias de la casa
+        # Añadimos las ganancias de la casa
         self.etiqueta_valor_casa.setText("${:,.2f}".format(ganancias_casa))
-        #Elemento para ajustar la forma de la tabla (y evitar que queden muy espaciados)
-        self.distribuidor_tabla_reporte.layout().setRowStretch(numero_fila+1, 1)
-        
+        # Elemento para ajustar la forma de la tabla (y evitar que queden muy espaciados)
+        self.distribuidor_tabla_reporte.layout().setRowStretch(numero_fila + 1, 1)
+
     def volver(self):
         """
         Esta función permite volver a la ventana de la lista de carreras
-        """   
+        """
         self.hide()
         self.interfaz.mostrar_vista_lista_carreras()
 

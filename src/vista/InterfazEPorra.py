@@ -20,7 +20,9 @@ class App_EPorra(QApplication):
         self.logica = logica
         self.mostrar_vista_lista_carreras()
         
-        
+    def val_carreras(self):
+        return self.logica.dar_carreras()
+    
     def mostrar_vista_lista_carreras(self):
         """
         Esta función inicializa la ventana de la lista de carreras
@@ -82,7 +84,7 @@ class App_EPorra(QApplication):
         if validacion == "":
             self.logica.editar_apostador(id, nombre)
             self.vista_lista_apostadores.mostrar_apostadores(self.logica.dar_apostadores())
-        return validacion
+        return nombre
 
     def mostrar_apostadores(self):
         """
@@ -183,3 +185,11 @@ class App_EPorra(QApplication):
         else:
             self.vista_carrera = Vista_carrera(self)
             self.vista_carrera.mostrar_competidores('',[])
+
+    def terminar_carrera(self, id, id_ganador):
+        """
+        Esta función finaliza una carrera y muestra el reporte de ganancias
+        """
+        print(id, id_ganador)
+        self.logica.terminar_carrera(id, id_ganador)
+        #self.mostrar_reporte_ganancias(id_ganador)
