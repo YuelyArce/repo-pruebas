@@ -46,7 +46,7 @@ class Dialogo_crear_apuesta(QDialog):
 
         self.combobox_apostadores = QComboBox(self)
         for apostador in self.apostadores:
-            self.combobox_apostadores.addItem(apostador["Nombre"])
+            self.combobox_apostadores.addItem(apostador.nombre)
         distribuidor_dialogo.addWidget(self.combobox_apostadores,numero_fila,1,1,3)
         numero_fila=numero_fila+1
 
@@ -64,7 +64,8 @@ class Dialogo_crear_apuesta(QDialog):
         
         self.combobox_competidores = QComboBox(self)
         for competidor in self.competidores:
-            self.combobox_competidores.addItem(competidor["Nombre"])             
+            print(competidor)
+            # self.combobox_competidores.addItem(competidor.nombre)             
         distribuidor_dialogo.addWidget(self.combobox_competidores,numero_fila,1,1,3)
 
         numero_fila=numero_fila+1

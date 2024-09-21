@@ -96,6 +96,9 @@ class App_EPorra(QApplication):
         self.vista_lista_apostadores.mostrar_apostadores(self.logica.dar_apostadores())
 
     def dar_apostadores(self):
+        return  self.logica.dar_apostadores()
+
+    def dar_apostadores(self):
         """
         Esta función retorna la lista de apostadores desde la lógica
         """

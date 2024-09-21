@@ -244,7 +244,7 @@ class Fachada_EPorra():
         Retorna:
             (list): La lista de competidores de una carrera
         '''
-        raise NotImplementedError("Método no implementado")
+        #raise NotImplementedError("Método no implementado")
 
     def dar_competidor(self, id_carrera, id_competidor):
         ''' Retorna un competidor en una carrera

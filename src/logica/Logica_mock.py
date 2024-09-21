@@ -31,6 +31,8 @@ class Logica_mock(Fachada_EPorra):
     def eliminar_carrera(self, id):
         del self.carreras[id]
 
+    
+    
     def dar_apostadores(self):
         return self.apostadores.copy()
 

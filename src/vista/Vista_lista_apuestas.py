@@ -95,7 +95,7 @@ class Vista_lista_apuestas(QWidget):
 
         self.btn_aniadir_apuesta = QPushButton("Añadir apuesta", self)
         self.btn_aniadir_apuesta.setFixedSize(200, 40)
-        self.btn_aniadir_apuesta.setToolTip("Añadir competidor")
+        self.btn_aniadir_apuesta.setToolTip("Añadir Apuesta")
         self.btn_aniadir_apuesta.setIcon(QIcon("src/recursos/009-money.png"))
         self.distribuidor_botones.addWidget(self.btn_aniadir_apuesta, 0, 1, Qt.AlignCenter)
         self.btn_aniadir_apuesta.clicked.connect(self.aniadir_apuesta)
