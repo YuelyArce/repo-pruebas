@@ -301,7 +301,6 @@ class Fachada_EPorra():
             }
             for apuesta in apuestas
         ]
-        print(apuestas)
         return resultados
 
     def dar_apuesta(self, id_carrera, id_apuesta):
