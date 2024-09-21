@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from src.models.models import Carrera, session,Competidor,Session, Apostador
+from src.models.models import Carrera, session,Competidor,Session, Apostador, Apuesta
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -35,27 +35,27 @@ class Fachada_EPorra():
         Retorna:
             (dict): La carrera identifcon el id_carrera recibido como parámetro
         '''
-        raise NotImplementedError("Método no implementado")
+        #raise NotImplementedError("Método no implementado")
         
     def actualizar_lista_carreras(self):
         """ Actualiza la lista de carreras """
         self.carreras = self.obtener_carreras()
 
     def crear_carrera(self, nombre_carrera, competidores):
-        with Session() as session:
-            # Validar el nombre de la carrera
-            if not nombre_carrera or nombre_carrera.strip() == "":
-                return False, "El nombre de la carrera no puede estar vacío."
+        
+        # Validar el nombre de la carrera
+        if not nombre_carrera or nombre_carrera.strip() == "":
+            return False, "El nombre de la carrera no puede estar vacío."
 
-            # Verificar si la carrera ya existe
-            carrera_existente = session.query(Carrera).filter_by(nombre=nombre_carrera).first()
-            
-            if carrera_existente:
-                carrera = carrera_existente
-            else:
-                carrera = Carrera(nombre=nombre_carrera)
-                session.add(carrera)
-                session.commit()
+        # Verificar si la carrera ya existe
+        carrera_existente = session.query(Carrera).filter_by(nombre=nombre_carrera).first()
+        
+        if carrera_existente:
+            carrera = carrera_existente
+        else:
+            carrera = Carrera(nombre=nombre_carrera)
+            session.add(carrera)
+            session.commit()
             
             # Procesar competidores
             for competidor_data in competidores:
@@ -290,7 +290,19 @@ class Fachada_EPorra():
         Retorna:
             (list): La lista de apuestas para una carrera
         '''
-        raise NotImplementedError("Método no implementado")
+        apuestas = (session.query(Apuesta).join(Carrera, Apuesta.carrera_id == id_carrera).join(Competidor, Apuesta.competidor_id == Competidor.id).join(Apostador, Apuesta.apostador_id == Apostador.id).filter_by(id=id_carrera).all())
+        resultados = [
+            {
+                "Apuestas" : apuesta,
+                "Carrera" : apuesta.carrera.nombre,
+                "Competidor" : apuesta.competidor.nombre,
+                "Apostador" : apuesta.apostador.nombre,
+                "Valor": apuesta.monto
+            }
+            for apuesta in apuestas
+        ]
+        print(apuestas)
+        return resultados
 
     def dar_apuesta(self, id_carrera, id_apuesta):
         ''' Retorna una apuesta a partir de la carrera y su posición en la lista de apuestas

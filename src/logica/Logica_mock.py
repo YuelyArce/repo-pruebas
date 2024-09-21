@@ -64,7 +64,9 @@ class Logica_mock(Fachada_EPorra):
         del self.carreras[id_carrera]['Competidores'][id_competidor]
 
     def dar_apuestas_carrera(self, id_carrera):
+        
         nombre_carrera =self.carreras[id_carrera]['Nombre']
+        print("id de la carrera*******", nombre_carrera)
         return list(filter(lambda x: x['Carrera']==nombre_carrera, self.apuestas))
 
     def dar_apuesta(self, id_carrera, id_apuesta):

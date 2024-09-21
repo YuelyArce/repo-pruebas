@@ -223,7 +223,8 @@ class Vista_lista_carreras(QWidget):
         Esta función informa a la interfaz para desplegar la ventana de la lista de apuestas
         """        
         self.hide()
-        self.interfaz.mostrar_apuestas(id_carrera)
+        carreras = self.carreras[id_carrera]
+        self.interfaz.mostrar_apuestas(carreras)
         
     def mostrar_ventana_crear_carrera(self):
         """

@@ -32,8 +32,13 @@ class Apuesta(Base):
     __tablename__ = 'apuestas'
     id = Column(Integer, primary_key=True)
     monto = Column(Float)
-    competidor_id = Column(Integer)
-    apostador_id = Column(Integer)
+    carrera_id =  Column(Integer, ForeignKey('carreras.id'))
+    competidor_id = Column(Integer, ForeignKey('competidores.id'))
+    apostador_id = Column(Integer, ForeignKey('apostadores.id'))
+
+    carrera = relationship("Carrera")
+    competidor = relationship("Competidor")
+    apostador = relationship("Apostador")
 
 # Crear la base de datos SQLite
 engine = create_engine('sqlite:///carrerasx.db')

@@ -111,10 +111,11 @@ class App_EPorra(QApplication):
         """
         Esta función muestra las apuestas de una carrera
         """
-        self.carrera_actual = id_carrera
-        nombre_carrera = self.logica.dar_carrera(id_carrera)['Nombre']
+        
+        nombre_carrera = id_carrera.nombre
         self.vista_lista_apuestas=Vista_lista_apuestas(self)
-        self.vista_lista_apuestas.mostrar_apuestas(nombre_carrera, self.logica.dar_apuestas_carrera(id_carrera))
+        
+        self.vista_lista_apuestas.mostrar_apuestas(nombre_carrera, self.logica.dar_apuestas_carrera(id_carrera.id))
 
     def dar_apuesta(self, id_apuesta):
         """
